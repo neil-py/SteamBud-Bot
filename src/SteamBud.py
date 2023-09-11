@@ -2,6 +2,7 @@ import requests
 import stores
 import re
 from urllib.parse import unquote
+from stores import StoreLookUp
 
 
 class SearchAPI():
@@ -13,6 +14,7 @@ class SearchAPI():
         'content-type': "application/json",
 		'connection': "keep-alive"
     }
+        self.StoreLookup = StoreLookUp()
 
     def __cheapDealSearchID(self,deal_id) -> tuple:
         req_get_store_id = requests.get(f"{self.url_endpoint}deals", 
@@ -53,7 +55,7 @@ class SearchAPI():
             game_data = {
                 'game_title': game_title,
                 'cheapset_price': cheapest_price,
-                'cheapest_store': stores.store_list[int(store_id)-1]['storeName'],
+                'cheapest_store': self.StoreLookup.lookup_req(int(store_id)-1)['storeName'],
                 'thumbnail': game_thumbnail,
                 'deal_link': deal_redirect_link
                         }
@@ -94,8 +96,8 @@ class SearchAPI():
                 'gameID': game_id,
                 'game_title': game_title,
                 'cheapset_price': cheapest_price,
-                'cheapest_store': stores.store_list[int(store_id)-1]['storeName'],
-                'cheapest_store_banner': f"https://www.cheapshark.com{stores.store_list[int(store_id)-1]['images']['banner']}",
+                'cheapest_store': self.StoreLookup.lookup_req(int(store_id)-1)['storeName'],
+                'cheapest_store_banner': f"https://www.cheapshark.com{self.StoreLookup.lookup_req(int(store_id)-1)['images']['banner']}",
                 'thumbnail': game_thumbnail,
                 'deal_link': deal_redirect_link
                         }
@@ -131,9 +133,9 @@ class SearchAPI():
                     game_data['cheapest_price'] = deals['price']
                     deal_search = self.__cheapDealSearchID(deals['dealID'])
                     store_id = deal_search[0]
-                    link = f"https://www.cheapshark.com{stores.store_list[int(store_id)-1]['images']['banner']}"
+                    link = f"https://www.cheapshark.com{self.StoreLookup.lookup_req(int(store_id)-1)['images']['banner']}"
                     game_data['cheapest_store_banner'] =  link
-                    game_data['cheapest_store'] = stores.store_list[int(store_id)-1]['storeName']
+                    game_data['cheapest_store'] = self.StoreLookup.lookup_req(int(store_id)-1)['storeName']
                     game_data['deal_link'] = deal_search[1]
                     savings = deals['savings']
                     game_data['savings'] = int(float(savings))
@@ -143,10 +145,10 @@ class SearchAPI():
                     store_id = deal_search[0]
                     deal_redirect_link = deal_search[1]
                     deal_saving =  deals['savings']
-                    link_1 = f"https://www.cheapshark.com{stores.store_list[int(store_id)-1]['images']['logo']}"
+                    link_1 = f"https://www.cheapshark.com{self.StoreLookup.lookup_req(int(store_id)-1)['images']['logo']}"
                     game_data['other_deals'].append(
                         {
-                            'store': stores.store_list[int(store_id)-1]['storeName'],
+                            'store': self.StoreLookup.lookup_req(int(store_id)-1)['storeName'],
                             'price': deals['price'],
                             'deal_link': deal_redirect_link,
                             'store_thumb': link_1,
@@ -189,8 +191,8 @@ class SearchAPI():
             count+=1
 
         return {
-            'store_name': stores.store_list[int(storeID)-1]['storeName'],
-            'store_banner': f"https://www.cheapshark.com{stores.store_list[int(storeID)-1]['images']['banner']}",
+            'store_name': self.StoreLookup.lookup_req(int(storeID)-1)['storeName'],
+            'store_banner': f"https://www.cheapshark.com{self.StoreLookup.lookup_req(int(storeID)-1)['images']['banner']}",
             'deals': top_deals
         }
     
@@ -208,3 +210,4 @@ class SearchAPI():
             if store['isActive'] == 1:
                 available_stores.append(store)
         return available_stores
+    

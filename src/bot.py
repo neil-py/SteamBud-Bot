@@ -1,7 +1,7 @@
 import discord
 from dotenv import dotenv_values
 from discord.ext import commands
-from CheapSharkAPI import SearchAPI
+from SteamBud import SearchAPI
 
 config = dotenv_values(".env")
 TOKEN = config['TOKEN']
@@ -206,6 +206,7 @@ async def stores(ctx):
 @bot.command()
 async def sbcmds(ctx):
     embed = discord.Embed(title="🤖 SteamBud Commands 🤖", color= 16777215)
+    embed.add_field(name="🔗 | !info", value='Bot Info', inline=False)
     embed.add_field(name="🔗 | !sbcmds", value='SteamBud Commands', inline=False)
     embed.add_field(name="🔗 | !stores", value='Return Trusted Websites', inline=False)
     embed.add_field(name='🔗 | !searchgame "<game name>" <amount **optional **max=10>', value='Search Games and Respective Game ID', inline=False)
@@ -213,6 +214,13 @@ async def sbcmds(ctx):
     embed.add_field(name='🔗 | !findDeals <appID>', value='Search Deals Based on appID', inline=False)
     embed.add_field(name='🔗 | !steamID <steamappid>', value='Search Deals Based on the SteamAppID', inline=False)
     embed.add_field(name='🔗 | !steamLINK <steamlink>', value='Search Deals Based on the Steam Link', inline=False)
+    await ctx.send(embed=embed)
+
+@bot.command()
+async def info(ctx):
+    embed = discord.Embed(title="🤖 SteamBud Info 🤖", description="SteamBud is an open source discord bot made for every game enthusiast. Check the github repository for more info", color= 16777215)
+    embed.add_field(name=f"👨‍💻 Developer: @genua", value='', inline=False)
+    embed.add_field(name="🔗 GitHubRepo: https://github.com/neil-py/SteamBud-Bot", value='', inline=False)
     await ctx.send(embed=embed)
 
 def main(token):
